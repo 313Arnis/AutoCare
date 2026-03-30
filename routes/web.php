@@ -11,10 +11,11 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-// Dashboard (parasti nāk komplektā ar Breeze/Jetstream)
-Route::view('dashboard', 'dashboard')
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
+
+
+Route::get('/dashboard', function () {
+    return redirect()->route('cars.index');
+})->middleware(['auth', 'verified']);
 
 // Visi maršruti, kuriem vajag būt ielogotam
 Route::middleware(['auth'])->group(function () {

@@ -16,29 +16,29 @@ class CheckCarDeadlines extends Command
 
     public function handle()
     {
-        // 1. Pārbaudām OCTA un TA (3 un 1 diena pirms termiņa)
+        // 1. Pārbauda OCTA un TA 
         $targetDays = [3, 1]; 
         
         foreach ($targetDays as $days) {
             $dateToCheck = Carbon::today()->addDays($days)->toDateString();
 
-            // Pārbaudām OCTA
+            // Pārbauda OCTA
             $octaCars = Car::whereDate('octa_beigas', $dateToCheck)->with('user')->get();
             foreach ($octaCars as $car) {
                 $this->sendReminder($car, 'OCTA', $days);
             }
 
-            // Pārbaudām TA
+            // Pārbauda TA
             $taCars = Car::whereDate('tehniska_beigas', $dateToCheck)->with('user')->get();
             foreach ($taCars as $car) {
                 $this->sendReminder($car, 'Tehniskā apskate', $days);
             }
         }
 
-        // 2. Eļļas maiņas loģika
-        // Testēšanai atstāts "true". Vēlāk nomaini uz: if (now()->day == 1)
-        if (true) {
-            $this->info('Pārbauda eļļas maiņas prognozes...');
+        // Eļļas maiņas loģika
+        
+        if (now()->day == 1) {
+            $this->info ('Pārbauda eļļas maiņas prognozes...');
             
             $allCars = Car::with('user')->get();
             foreach ($allCars as $car) {
@@ -47,15 +47,13 @@ class CheckCarDeadlines extends Command
 
                 if ($car->nobraukums < $ellas_limits && $prognoze >= $ellas_limits) {
                     
-                    // APRĒĶINU LABOJUMI:
-                    // 1. Atlikušos kilometrus pārvēršam par veselu skaitli
+                    
                     $atlikusie_km = intval($ellas_limits - $car->nobraukums);
                     
-                    // 2. Dienas līdz mēneša beigām rēķinām no šodienas sākuma līdz mēneša beigām
-                    // diffInDays atgriež veselu skaitli
+                   
                     $dienas_beigas = (int) Carbon::today()->diffInDays(Carbon::today()->endOfMonth());
 
-                    // Ja šodien ir mēneša pēdējā diena, diff var būt 0, pieliekam 1 drošībai
+                  
                     if ($dienas_beigas <= 0) $dienas_beigas = 1;
 
                     $this->sendReminder($car, 'Eļļas maiņa', 30, [

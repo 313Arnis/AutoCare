@@ -54,9 +54,7 @@
             </div>
         </div>
 
-        <footer class="mt-8 text-gray-400 text-sm">
-            &copy; {{ date('Y') }} Auto Garaža Pro. Visas tiesības aizsargātas.
-        </footer>
+        
     </div>
 </body>
 </html>
